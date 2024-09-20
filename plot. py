@@ -1,0 +1,39 @@
+import requests
+import matplotlib.pyplot as plt
+from config import API_KEY
+
+def get_weather_data(city):
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+def get_temperature(city):
+    weather_data = get_weather_data(city)
+    if weather_data:
+        return weather_data['main']['temp']
+    else:
+        return None
+
+def plot_temperatures(cities):
+    temperatures = []
+    for city in cities:
+        temp = get_temperature(city)
+        if temp is not None:
+            temperatures.append(temp)
+        else:
+            temperatures.append(0)  # Default to 0 if data is not available
+    
+    plt.figure(figsize=(8,5))
+    plt.bar(cities, temperatures, color='skyblue')
+    plt.title('Temperature in Different Cities')
+    plt.xlabel('Cities')
+    plt.ylabel('Temperature (°C)')
+    plt.show()
+
+if __name__ == "__main__":
+    cities = input("Enter city names separated by commas: ").split(',')
+    cities = [city.strip() for city in cities]
+    plot_temperatures(cities)
